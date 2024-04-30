@@ -33,7 +33,7 @@
 
 		.form-group input[type="text"],
 		.form-group input[type="password"],
-		.form-group input[type="file"] {
+		.form-group input[type="password"] {
 			width: 100%;
 			padding: 10px;
 			border-radius: 5px;
@@ -66,11 +66,11 @@
 			<label for="username">Username:</label>
 			<input type="text" id="username" name="username" required>
 			<div class="error" id="username-error"></div>
-			<label for="profile-picture">Profile Picture:</label>
-			<input type="file" id="profile-picture" name="profile-picture" accept="image/*" required>
-			<div class="error" id="profile-picture-error"></div>
 			<label for="password">Password:</label>
 			<input type="password" id="password" name="password" required>
+			<label for="confirm-password">Confirm Password:</label>
+			<input type="password" id="confirm-password" name="confirm-password" required>
+			<div class="error" id="password-error"></div>
 			<input type="submit" value="Create Account">
 		</form>
 	</div>
@@ -78,36 +78,66 @@
 	<script>
 		const createAccountForm = document.getElementById("create-account-form");
 		const usernameInput = document.getElementById("username");
-		const profilePictureInput = document.getElementById("profile-picture");
+		const passwordInput = document.getElementById("password");
+		const confirmPasswordInput = document.getElementById("confirm-password");
 		const usernameError = document.getElementById("username-error");
-		const profilePictureError = document.getElementById("profile-picture-error");
+		const passwordError = document.getElementById("password-error");
 
 		createAccountForm.addEventListener("submit", (e) => {
 			e.preventDefault();
 
 			const username = usernameInput.value;
-			const password = createAccountForm["password"].value;
-			const profilePicture = profilePictureInput.files[0];
+			const password = passwordInput.value;
+			const confirmPassword = confirmPasswordInput.value;
 
-			// Check if the username is already taken
-			if (localStorage.getItem("username") === username) {
-				usernameError.textContent = "This username is already taken.";
-				return;
-			}
-
-			// Check if the file is a valid image file
-			if (!profilePicture.type.startsWith("image/")) {
-				profilePictureError.textContent = "Please upload a valid image file.";
-				return;
-			}
-
-			// Save the username, profile picture, and password in local storage
-			localStorage.setItem("username", username);
-			localStorage.setItem("profilePicture", URL.createObjectURL(profilePicture));
-			localStorage.setItem("password", password);
-
-			// Redirect to the next page
-			window.location.href = "next-page.html";
+			// Check if the entered username is already taken
+			fetch('/check-username', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					username
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.isTaken) {
+					usernameError.textContent = "This username is already taken. Please choose another one.";
+				}else {
+					// Check if the entered password and confirm password match
+					if (password !== confirmPassword) {
+						passwordError.textContent = "The entered password and confirm password do not match. Please try again.";
+					} else {
+						// Save the user information in the backend server
+						fetch('/save-user', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								username,
+								password
+							})
+						})
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								// Redirect to the login page
+								window.location.href = "login.html";
+							} else {
+								alert("An error occurred while creating the account. Please try again later.");
+							}
+						})
+						.catch(error => {
+							console.error("Error:", error);
+						});
+					}
+				}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+			});
 		});
 	</script>
 </body>
