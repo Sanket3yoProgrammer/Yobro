@@ -19,8 +19,8 @@
 
 		.header {
 			display: flex;
-			align-items: center;
 			justify-content: space-between;
+			align-items: center;
 			margin-bottom: 20px;
 		}
 
@@ -39,7 +39,7 @@
 
 		.chat-area {
 			height: 400px;
-			border: 1px solid #ddd;
+			border: 1px solid #ccc;
 			padding: 10px;
 			overflow-y: auto;
 		}
@@ -50,38 +50,38 @@
 
 		.message-sender {
 			font-weight: bold;
-			color: #4CAF50;
+			color: #333;
 		}
 
 		.message-content {
-			padding: 5px 10px;
-			background-color: #ddd;
+			padding: 10px;
+			background-color: #f0f0f0;
 			border-radius: 5px;
 		}
 
 		.chat-box {
+			display: flex;
+			align-items: center;
 			margin-top: 20px;
 		}
 
-		.chat-box textarea {
-			width: 100%;
-		height: 100px;
-			padding: 10px;
+		.chat-box input[type="text"] {
+			flex-grow: 1;
+		padding: 10px;
 			border-radius: 5px;
 			border: 1px solid #ccc;
 		}
 
-		.chat-box button {
+		.chat-box input[type="submit"] {
 			background-color: #4CAF50;
 			color: #fff;
 			padding: 10px 20px;
 			border: none;
 			border-radius: 5px;
 			cursor: pointer;
-			margin-top: 10px;
 		}
 
-		.chat-box button:hover {
+		.chat-box input[type="submit"]:hover {
 			background-color: #3e8e41;
 		}
 	</style>
@@ -89,56 +89,82 @@
 <body>
 	<div class="container">
 		<div class="header">
-			<img src="" id="pfp" alt="Profile Picture">
+			<img src="" alt="Profile Picture" id="profile-picture">
 			<h1 id="username"></h1>
 		</div>
 		<div class="chat-area"></div>
-		<div class="chat-box">
-			<textarea id="message-input"></textarea>
-			<button id="send-button">Send</button>
-		</div>
+		<form class="chat-box">
+			<input type="text" id="message-input" placeholder="Type your message here...">
+			<input type="submit" value="Send">
+		</form>
 	</div>
 
 	<script>
-		// Get the username and PFP from local storage
-		const username = localStorage.getItem("username");
-		const pfp = localStorage.getItem("profilePicture");
-
-		// Set the username and PFP in the HTML
-		document.getElementById("username").textContent = username;
-		document.getElementById("pfp").src = pfp;
+		// Get the user information from the backend server
+		fetch('/get-user')
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				// Set the username and profile picture in the HTML
+				document.getElementById("username").textContent = data.username;
+				document.getElementById("profile-picture").src = data.profilePicture;
+			} else {
+				alert("An error occurred while getting the user information. Please try again later.");
+			}
+		})
+		.catch(error => {
+			console.error("Error:", error);
+		});
 
 		// Get the chat area, message input, and send button
 		const chatArea = document.querySelector(".chat-area");
 		const messageInput = document.getElementById("message-input");
-		const sendButton = document.getElementById("send-button");
+		const sendButton = document.querySelector(".chat-box input[type='submit']");
 
 		// Add an event listener to the send button
-		sendButton.addEventListener("click", () => {
-			// Get the message text
+		sendButton.addEventListener("click", (e) => {
+			e.preventDefault();
+
 			const messageText = messageInput.value;
 
-			// Create a new message element
-			const message = document.createElement("div");
-			message.classList.add("message");
+			// Send the message to the backend server
+			fetch('/send-message', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					messageText
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					// Add the message to the chat area
+					const message = document.createElement("div");
+					message.classList.add("message");
 
-			// Create a message sender element
-			const messageSender = document.createElement("span");
-			messageSender.classList.add("message-sender");
-			messageSender.textContent = username;
-			message.appendChild(messageSender);
+					const messageSender = document.createElement("span");
+					messageSender.classList.add("message-sender");
+					messageSender.textContent = data.username;
+					message.appendChild(messageSender);
 
-			// Create a message content element
-			const messageContent = document.createElement("span");
-			messageContent.classList.add("message-content");
-			messageContent.textContent = messageText;
-			message.appendChild(messageContent);
+					const messageContent = document.createElement("span");
+					messageContent.classList.add("message-content");
+					messageContent.textContent = messageText;
+					message.appendChild(messageContent);
 
-			// Add the message to the chat area
-			chatArea.appendChild(message);
+					chatArea.appendChild(message);
 
-			// Clear the message input
-			messageInput.value = "";
+					// Clear the message input
+					messageInput.value = "";
+				} else {
+					alert("An error occurred while sending the message. Please try again later.");
+				}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+			});
 		});
 	</script>
 </body>
