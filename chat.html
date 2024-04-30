@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat</title>
+	<style>
+		body {
+			background-color: #f0f0f0;
+			font-family: Arial, sans-serif;
+		}
+
+		.container {
+			width: 800px;
+			background-color: #fff;
+			padding: 20px;
+			margin: 50px auto;
+			border-radius: 5px;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 20px;
+		}
+
+		.header img {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+
+		.header h1 {
+			margin: 0;
+			font-size: 24px;
+			color: #333;
+		}
+
+		.chat-area {
+			height: 400px;
+			border: 1px solid #ddd;
+			padding: 10px;
+			overflow-y: auto;
+		}
+
+		.message {
+			margin-bottom: 10px;
+		}
+
+		.message-sender {
+			font-weight: bold;
+			color: #4CAF50;
+		}
+
+		.message-content {
+			padding: 5px 10px;
+			background-color: #ddd;
+			border-radius: 5px;
+		}
+
+		.chat-box {
+			margin-top: 20px;
+		}
+
+		.chat-box textarea {
+			width: 100%;
+		height: 100px;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+		}
+
+		.chat-box button {
+			background-color: #4CAF50;
+			color: #fff;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			margin-top: 10px;
+		}
+
+		.chat-box button:hover {
+			background-color: #3e8e41;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<img src="" id="pfp" alt="Profile Picture">
+			<h1 id="username"></h1>
+		</div>
+		<div class="chat-area"></div>
+		<div class="chat-box">
+			<textarea id="message-input"></textarea>
+			<button id="send-button">Send</button>
+		</div>
+	</div>
+
+	<script>
+		// Get the username and PFP from local storage
+		const username = localStorage.getItem("username");
+		const pfp = localStorage.getItem("profilePicture");
+
+		// Set the username and PFP in the HTML
+		document.getElementById("username").textContent = username;
+		document.getElementById("pfp").src = pfp;
+
+		// Get the chat area, message input, and send button
+		const chatArea = document.querySelector(".chat-area");
+		const messageInput = document.getElementById("message-input");
+		const sendButton = document.getElementById("send-button");
+
+		// Add an event listener to the send button
+		sendButton.addEventListener("click", () => {
+			// Get the message text
+			const messageText = messageInput.value;
+
+			// Create a new message element
+			const message = document.createElement("div");
+			message.classList.add("message");
+
+			// Create a message sender element
+			const messageSender = document.createElement("span");
+			messageSender.classList.add("message-sender");
+			messageSender.textContent = username;
+			message.appendChild(messageSender);
+
+			// Create a message content element
+			const messageContent = document.createElement("span");
+			messageContent.classList.add("message-content");
+			messageContent.textContent = messageText;
+			message.appendChild(messageContent);
+
+			// Add the message to the chat area
+			chatArea.appendChild(message);
+
+			// Clear the message input
+			messageInput.value = "";
+		});
+	</script>
+</body>
+</html>
