@@ -35,7 +35,7 @@
 		.form-group input[type="password"] {
 			width: 100%;
 			padding: 10px;
-			border-radius: 5px;
+		border-radius: 5px;
 			border: 1px solid #ccc;
 		}
 
@@ -51,6 +51,18 @@
 		.form-group input[type="submit"]:hover {
 			background-color: #3e8e41;
 		}
+
+		.create-account-link {
+			text-align: center;
+			margin-top: 10px;
+			font-size: 14px;
+			color: #4CAF50;
+			text-decoration: none;
+		}
+
+		.create-account-link:hover {
+			text-decoration: underline;
+		}
 	</style>
 </head>
 <body>
@@ -63,6 +75,7 @@
 			<input type="password" id="password" name="password" required>
 			<input type="submit" value="Login">
 		</form>
+		<a class="create-account-link" href="create-account.html">Create Account</a>
 	</div>
 
 	<script>
