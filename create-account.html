@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Create Account</title>
+	<style>
+		body {
+			background-color: #f0f0f0;
+			font-family: Arial, sans-serif;
+		}
+
+		.container {
+			width: 300px;
+			background-color: #fff;
+		padding: 20px;
+			margin: 50px auto;
+			border-radius: 5px;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.title {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		.form-group input[type="text"],
+		.form-group input[type="password"],
+		.form-group input[type="file"] {
+			width: 100%;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+		}
+
+		.form-group input[type="submit"] {
+			background-color: #4CAF50;
+			color: #fff;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.form-group input[type="submit"]:hover {
+			background-color: #3e8e41;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2 class="title">Create Account</h2>
+		<form class="form-group" id="create-account-form">
+			<label for="username">Username:</label>
+			<input type="text" id="username" name="username" required>
+			<label for="profile-picture">Profile Picture:</label>
+			<input type="file" id="profile-picture" name="profile-picture" accept="image/*" required>
+			<label for="password">Password:</label>
+			<input type="password" id="password" name="password" required>
+			<input type="submit" value="Create Account">
+		</form>
+	</div>
+
+	<script>
+		const createAccountForm = document.getElementById("create-account-form");
+
+		createAccountForm.addEventListener("submit", (e) => {
+			e.preventDefault();
+
+			const username = createAccountForm["username"].value;
+			const password = createAccountForm["password"].value;
+			const profilePicture = createAccountForm["profile-picture"].files[0];
+
+			// Save the username, profile picture, and password in local storage
+			localStorage.setItem("username", username);
+			localStorage.setItem("profilePicture", URL.createObjectURL(profilePicture));
+			localStorage.setItem("password", password);
+
+			// Redirect to the next page
+			window.location.href = "next-page.html";
+		});
+	</script>
+</body>
+</html>
