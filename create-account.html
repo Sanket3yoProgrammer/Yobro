@@ -11,7 +11,7 @@
 		.container {
 			width: 300px;
 			background-color: #fff;
-		padding: 20px;
+			padding: 20px;
 			margin: 50px auto;
 			border-radius: 5px;
 			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -52,6 +52,11 @@
 		.form-group input[type="submit"]:hover {
 			background-color: #3e8e41;
 		}
+
+		.error {
+			color: red;
+			margin-top: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -60,8 +65,10 @@
 		<form class="form-group" id="create-account-form">
 			<label for="username">Username:</label>
 			<input type="text" id="username" name="username" required>
+			<div class="error" id="username-error"></div>
 			<label for="profile-picture">Profile Picture:</label>
 			<input type="file" id="profile-picture" name="profile-picture" accept="image/*" required>
+			<div class="error" id="profile-picture-error"></div>
 			<label for="password">Password:</label>
 			<input type="password" id="password" name="password" required>
 			<input type="submit" value="Create Account">
@@ -70,13 +77,29 @@
 
 	<script>
 		const createAccountForm = document.getElementById("create-account-form");
+		const usernameInput = document.getElementById("username");
+		const profilePictureInput = document.getElementById("profile-picture");
+		const usernameError = document.getElementById("username-error");
+		const profilePictureError = document.getElementById("profile-picture-error");
 
 		createAccountForm.addEventListener("submit", (e) => {
 			e.preventDefault();
 
-			const username = createAccountForm["username"].value;
+			const username = usernameInput.value;
 			const password = createAccountForm["password"].value;
-			const profilePicture = createAccountForm["profile-picture"].files[0];
+			const profilePicture = profilePictureInput.files[0];
+
+			// Check if the username is already taken
+			if (localStorage.getItem("username") === username) {
+				usernameError.textContent = "This username is already taken.";
+				return;
+			}
+
+			// Check if the file is a valid image file
+			if (!profilePicture.type.startsWith("image/")) {
+				profilePictureError.textContent = "Please upload a valid image file.";
+				return;
+			}
 
 			// Save the username, profile picture, and password in local storage
 			localStorage.setItem("username", username);
